@@ -1,13 +1,8 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import {
   CellProps,
   useBlockLayout,
-  useFilters,
-  useGlobalFilter,
   usePagination,
   useRowSelect,
   useSortBy,
@@ -116,8 +111,6 @@ export default function SuperTable() {
     pageCount,
     setPageSize,
     prepareRow,
-    setGlobalFilter,
-    setFilter,
     selectedFlatRows,
     rows,
   } = useTable(
@@ -128,8 +121,6 @@ export default function SuperTable() {
       defaultCanFilter: true,
     },
     useBlockLayout,
-    useFilters,
-    useGlobalFilter,
     useSortBy,
     usePagination,
     useRowSelect,
@@ -141,7 +132,6 @@ export default function SuperTable() {
             Header: ({ getToggleAllPageRowsSelectedProps }) => (
               <Checkbox {...getToggleAllPageRowsSelectedProps()} />
             ),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             Cell: ({ row }: CellProps<any>) => (
               <Checkbox {...row.getToggleRowSelectedProps()} />
             ),
@@ -154,6 +144,11 @@ export default function SuperTable() {
       });
     }
   );
+
+  // 현재 선택중인 로우 가져오기 버튼
+  const showClickElement = () => {
+    console.log(selectedFlatRows.map((row) => row.original))
+  }
 
   const { pageIndex, pageSize } = state;
 
@@ -252,6 +247,7 @@ export default function SuperTable() {
             {pageIndex + 1} of {pageOptions.length}
           </strong>
         </span>
+        <button onClick={() => showClickElement()}>showClickElement</button>
 
         <div className="pagination">
           <button
@@ -289,3 +285,4 @@ export default function SuperTable() {
     </Main>
   );
 }
+

@@ -8,8 +8,6 @@ import {
   useSortBy,
   useTable,
 } from "react-table";
-import MOCK_DATA from "./MOCK_DATA.json";
-import { COLUMNS } from "./columns";
 import { Checkbox } from "./Checkbox";
 import { Styles } from "./TableStyles";
 
@@ -94,10 +92,17 @@ const PaginationOptionsBottom = styled.div`
   }
 `;
 
-export default function SuperTable() {
-  const columns = useMemo(() => COLUMNS, []);
-  const data = useMemo(() => MOCK_DATA, []);
+interface SuperTableProps {
+  pagingYn : boolean
+  paramData : any[]
+  columnsInfo : any[]
+}
 
+const SuperTable : React.FC<SuperTableProps> = ({pagingYn, paramData, columnsInfo}) => {
+
+  const columns = useMemo(() => columnsInfo, []); // 칼럼정보
+  const data = useMemo(() => paramData, []); // 실제 데이터
+  // react-table 함수 선언
   const {
     getTableProps,
     getTableBodyProps,
@@ -118,7 +123,7 @@ export default function SuperTable() {
       // @ts-ignore
       columns,
       data,
-      defaultCanFilter: true,
+      manualPagination: false // true면 서버 사이드 렌더링 , false면 클라이언트 사이드 렌더링
     },
     useBlockLayout,
     useSortBy,
@@ -144,7 +149,14 @@ export default function SuperTable() {
       });
     }
   );
-
+  // 페이지 Y/N에 따라 타입 분별
+  let rowType = null;
+  if(pagingYn){
+    rowType = page
+  }else{
+    rowType = rows
+  }
+  
   // 현재 선택중인 로우 가져오기 버튼
   const showClickElement = () => {
     console.log(selectedFlatRows.map((row) => row.original))
@@ -164,7 +176,7 @@ export default function SuperTable() {
       <h1>
         User List <span>({total})</span>
       </h1>
-
+      {pagingYn &&
       <TableOptions>
         <div className="left">
           <span className="pagesize">
@@ -182,6 +194,7 @@ export default function SuperTable() {
           </span>
         </div>
       </TableOptions>
+      }
 
       <p>
         {selectedFlatRows.length > 0
@@ -223,7 +236,7 @@ export default function SuperTable() {
               ))}
             </div>
             <div {...getTableBodyProps()} className="body">
-              {page.map((row) => {
+              {rowType.map((row) => {
                 prepareRow(row);
                 return (
                   <div {...row.getRowProps()} className="tr">
@@ -239,7 +252,7 @@ export default function SuperTable() {
           </div>
         </Styles>
       </div>
-
+      {pagingYn &&
       <PaginationOptionsBottom>
         <span className="pageinfo">
           Showing{" "}
@@ -282,7 +295,9 @@ export default function SuperTable() {
           </button>
         </div>
       </PaginationOptionsBottom>
+      }
     </Main>
   );
 }
 
+export default SuperTable

@@ -8,7 +8,6 @@ import MOCK_DATA from "./components/MOCK_DATA.json";
 import React, {useState} from "react";
 import { COLUMNS } from "./components/columns";
 import ServerSideTable from './components/ServerSideTable';
-import { COLUMNS2 } from './components/columns2';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 

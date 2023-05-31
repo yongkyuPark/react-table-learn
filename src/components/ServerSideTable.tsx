@@ -227,8 +227,7 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
 
   // 현재 선택중인 로우 가져오기 버튼
   const showClickElement = () => {
-    console.log(selectedFlatRows)
-    //console.log(selectedFlatRows.map((row) => row.original));
+    console.log(selectedFlatRows.map((row) => row.original));
   };
 
   React.useEffect(() => {

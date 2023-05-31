@@ -202,18 +202,13 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
     useRowSelect,
     (hooks) => {
         hooks.visibleColumns.push((columns) => [
-          // Let's make a column for selection
           {
             id: "selection",
-            // The header can use the table's getToggleAllRowsSelectedProps method
-            // to render a checkbox
             Header: ({ getToggleAllPageRowsSelectedProps }) => (
               <div>
                 <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
               </div>
             ),
-            // The cell can use the individual row's getToggleRowSelectedProps method
-            // to the render a checkbox
             Cell: ({ row }: CellProps<any>) => (
               <div>
                 <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
@@ -245,11 +240,11 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
   }, [sortBy, gotoPage]);
 
   React.useEffect(() => {
-    console.log("useEff = " + data?.length);
-    if (data?.length !== 0) {
-      dispatch({
-        type: TOTAL_COUNT_CHANGED,
-        payload: data?.length,
+    console.log("useEff = " + data?.length); // 원래는 데이터 받아올때 totalCount 받아와서
+    if (data?.length !== 0) {                // 넣어줘야 하는데 현재 목데이터로 처리중이기
+      dispatch({                             // 때문에 목데이터 전체 갯수인 200개로 하드코딩 하는중
+        type: TOTAL_COUNT_CHANGED,           // 추후에는 totalCount로 바꿔야 함
+        payload: 200,
       });
     }
   }, [data?.length]);

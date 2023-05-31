@@ -11,9 +11,12 @@ export const fetchPokemonData = async (page:number, pageSize:number, pageSortBy:
       const response = await fetch(
         `http://localhost:3000/data/MOCK_DATA.json?pageNo=${page}&pageSize=${pageSize}${paramStr}`
       );
+
       const data = await response.json();
+      // 목데이터 처리 위해서 임시로 customData 사용
+      const customData = data.slice((pageSize*page),(pageSize*(page+1)))
   
-      return data;
+      return customData;
     } catch (e) {
       
     }

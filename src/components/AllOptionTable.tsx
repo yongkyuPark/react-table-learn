@@ -123,6 +123,7 @@ const SuperTable : React.FC<SuperTableProps> = ({pagingYn, paramData, columnsInf
       // @ts-ignore
       columns,
       data,
+      manualSortBy: false, // true일때는 serverside , false일때는 clientside
       manualPagination: false // true면 서버 사이드 렌더링 , false면 클라이언트 사이드 렌더링
     },
     useBlockLayout,

@@ -15,15 +15,15 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 const queryClient = new QueryClient();
 
 function App() {
-    const [data, setData] = useState(MOCK_DATA) // 목 데이터
     const [column, setColumn] = useState(COLUMNS) // 목 데이터 칼럼
-    const [column2, setColumn2] = useState(COLUMNS2) // 포켓몬 데이터 칼럼
+    const [data, setData] = useState(MOCK_DATA) // 목 데이터
+    
     return (
         <div>
             {/* <AllOptionTable paramData={data} pagingYn={true} columnsInfo={column}/>
             <AllOptionTable paramData={data} pagingYn={false} columnsInfo={column}/> */}
             <QueryClientProvider client={queryClient}>
-                <ServerSideTable columns={column}/>
+                <ServerSideTable columns={column} pagingYn={true}/>
                 <ReactQueryDevtools initialIsOpen />
             </QueryClientProvider>
         </div>

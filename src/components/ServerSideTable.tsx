@@ -1,15 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
-import styled from 'styled-components';
-import {
-    usePagination,
-    useSortBy,
-    useTable,
-  } from "react-table";
-import { useQuery } from 'react-query';
-import { fetchPokemonData } from './fetchData';
+import React, { InputHTMLAttributes, forwardRef, useEffect, useMemo, useRef, useState } from "react";
+import styled from "styled-components";
+import { CellProps, usePagination, useRowSelect, useSortBy, useTable } from "react-table";
+import { useQuery } from "react-query";
+import { fetchPokemonData } from "./fetchData";
 import { Checkbox } from "./Checkbox";
 import Sorting from "./Sorting";
-
 
 const TableContainer = styled.div`
   padding: 1rem;
@@ -44,30 +39,62 @@ const TableContainer = styled.div`
   }
 `;
 
-interface SortingProps {
-    column: any;
+interface IndeterminateCheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
+    indeterminate?: boolean;
 }
+
+const IndeterminateCheckbox = forwardRef<HTMLInputElement, IndeterminateCheckboxProps>(
+    ({ indeterminate, ...rest }, ref:any) => {
+      const defaultRef = useRef<HTMLInputElement>(null);
+      const resolvedRef = ref || defaultRef;
+  
+      useEffect(() => {
+        if (resolvedRef.current) {
+          resolvedRef.current.indeterminate = indeterminate || false;
+        }
+      }, [resolvedRef, indeterminate]);
+  
+      return (
+        <>
+          <input type="checkbox" ref={resolvedRef} {...rest} />
+        </>
+      );
+    }
+);
 
 // 데이터 매핑 해주는 로직
 const trimData = (data = []) =>
   data.map(({ name, url }) => ({
     name,
     url,
-}));
+  }));
 // 데이터 매핑 해주는 로직
 const mockTrimData = (data = []) =>
-    data.map(({id,first_name,displayNo,last_name,useYn,date_of_birth,country,phone,email,age}) => ({
-        id,
-        first_name,
-        displayNo,
-        last_name,
-        useYn,
-        date_of_birth,
-        country,
-        phone,
-        email,
-        age
-    }))
+  data.map(
+    ({
+      id,
+      first_name,
+      displayNo,
+      last_name,
+      useYn,
+      date_of_birth,
+      country,
+      phone,
+      email,
+      age,
+    }) => ({
+      id,
+      first_name,
+      displayNo,
+      last_name,
+      useYn,
+      date_of_birth,
+      country,
+      phone,
+      email,
+      age,
+    })
+  );
 
 // 초기값 설정
 const initialState = {
@@ -77,10 +104,10 @@ const initialState = {
   queryPageSortBy: [],
 };
 
-const PAGE_CHANGED = 'PAGE_CHANGED';
-const PAGE_SIZE_CHANGED = 'PAGE_SIZE_CHANGED';
-const TOTAL_COUNT_CHANGED = 'TOTAL_COUNT_CHANGED';
-const PAGE_SORT_CHANGED = 'PAGE_SORT_CHANGED'
+const PAGE_CHANGED = "PAGE_CHANGED";
+const PAGE_SIZE_CHANGED = "PAGE_SIZE_CHANGED";
+const TOTAL_COUNT_CHANGED = "TOTAL_COUNT_CHANGED";
+const PAGE_SORT_CHANGED = "PAGE_SORT_CHANGED";
 
 // 상태 변할때 상태값 저장하는 로직
 const reducer = (state: any, { type, payload }: any) => {
@@ -104,23 +131,29 @@ const reducer = (state: any, { type, payload }: any) => {
       return {
         ...state,
         queryPageSortBy: payload,
-        };
+      };
     default:
       throw new Error(`Unhandled action type: ${type}`);
   }
 };
 
-interface ServerSideTableProps{
-    columns : any[]
+interface ServerSideTableProps {
+  columns: any[];
+  pagingYn: boolean;
 }
 
-const ServerSideTable : React.FC<ServerSideTableProps> = ({columns}) => {
-    // 초기값 reduce에 저장
-  const [{ queryPageIndex, queryPageSize, totalCount,queryPageSortBy  }, dispatch] =
-    React.useReducer(reducer, initialState);
+const ServerSideTable: React.FC<ServerSideTableProps> = ({
+  columns,
+  pagingYn,
+}) => {
+  // 초기값 reduce에 저장
+  const [
+    { queryPageIndex, queryPageSize, totalCount, queryPageSortBy },
+    dispatch,
+  ] = React.useReducer(reducer, initialState);
 
   const { isLoading, error, data, isSuccess } = useQuery(
-    ['mock_data', queryPageIndex, queryPageSize, queryPageSortBy],
+    ["mock_data", queryPageIndex, queryPageSize, queryPageSortBy],
     () => fetchPokemonData(queryPageIndex, queryPageSize, queryPageSortBy),
     {
       keepPreviousData: true,
@@ -145,7 +178,7 @@ const ServerSideTable : React.FC<ServerSideTableProps> = ({columns}) => {
     setPageSize,
     selectedFlatRows,
     // Get the state from the instance
-    state: { pageIndex, pageSize ,sortBy},
+    state: { pageIndex, pageSize, sortBy },
   } = useTable(
     {
       columns,
@@ -155,26 +188,48 @@ const ServerSideTable : React.FC<ServerSideTableProps> = ({columns}) => {
         pageSize: queryPageSize,
         sortBy: queryPageSortBy,
       },
-      manualSorting:true, // true일때는 serverside , false일때는 clientside
+      manualSortBy: true, // true일때는 serverside , false일때는 clientside
       manualPagination: true, // true일때는 serverside , false일때는 clientside
       pageCount: isSuccess ? Math.ceil(totalCount / queryPageSize) : undefined,
       autoResetSortBy: false,
       autoResetExpanded: false,
-      autoResetPage: false
+      autoResetPage: false,
+      autoResetSelectedRows: false,
+      getRowId: (row:any) => row.id
     },
     useSortBy,
     usePagination,
+    useRowSelect,
+    (hooks) => {
+        hooks.visibleColumns.push((columns) => [
+          // Let's make a column for selection
+          {
+            id: "selection",
+            // The header can use the table's getToggleAllRowsSelectedProps method
+            // to render a checkbox
+            Header: ({ getToggleAllPageRowsSelectedProps }) => (
+              <div>
+                <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
+              </div>
+            ),
+            // The cell can use the individual row's getToggleRowSelectedProps method
+            // to the render a checkbox
+            Cell: ({ row }: CellProps<any>) => (
+              <div>
+                <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+              </div>
+            )
+          },
+          ...columns
+        ]);
+      }
   );
 
-  console.log(data)
-  console.log("totalCount="+totalCount)
-  console.log("queryPageSize="+ queryPageSize)
-  console.log("pageCount = "+ pageCount)
-
-    // 현재 선택중인 로우 가져오기 버튼
-    const showClickElement = () => {
-        console.log(selectedFlatRows.map((row) => row.original))
-    }
+  // 현재 선택중인 로우 가져오기 버튼
+  const showClickElement = () => {
+    console.log(selectedFlatRows)
+    //console.log(selectedFlatRows.map((row) => row.original));
+  };
 
   React.useEffect(() => {
     dispatch({ type: PAGE_CHANGED, payload: pageIndex });
@@ -188,10 +243,10 @@ const ServerSideTable : React.FC<ServerSideTableProps> = ({columns}) => {
   useEffect(() => {
     dispatch({ type: PAGE_SORT_CHANGED, payload: sortBy });
     gotoPage(0);
-}, [sortBy, gotoPage]);
+  }, [sortBy, gotoPage]);
 
   React.useEffect(() => {
-    console.log("useEff = "+data?.length)
+    console.log("useEff = " + data?.length);
     if (data?.length !== 0) {
       dispatch({
         type: TOTAL_COUNT_CHANGED,
@@ -217,9 +272,11 @@ const ServerSideTable : React.FC<ServerSideTableProps> = ({columns}) => {
               {headerGroups.map((headerGroup) => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column) => (
-                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                      {column.render('Header')}
-                      {column.isSorted ? <Sorting column={column} /> : ''}
+                    <th
+                      {...column.getHeaderProps(column.getSortByToggleProps())}
+                    >
+                      {column.render("Header")}
+                      {column.isSorted ? <Sorting column={column} /> : ""}
                     </th>
                   ))}
                 </tr>
@@ -231,64 +288,72 @@ const ServerSideTable : React.FC<ServerSideTableProps> = ({columns}) => {
                 return (
                   <tr {...row.getRowProps()}>
                     {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                     ))}
                   </tr>
                 );
               })}
             </tbody>
           </table>
-          <div className="pagination">
-            <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-              {'<<'}
-            </button>{' '}
-            <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-              {'<'}
-            </button>{' '}
-            <button onClick={() => nextPage()} disabled={!canNextPage}>
-              {'>'}
-            </button>{' '}
-            <button
-              onClick={() => gotoPage(pageCount - 1)}
-              disabled={!canNextPage}
-            >
-              {'>>'}
-            </button>{' '}
-            <span>
-              Page{' '}
-              <strong>
-                {pageIndex + 1} of {pageOptions.length}
-              </strong>{' '}
-            </span>
-            <span>
-              | Go to page:{' '}
-              <input
-                type="number"
-                value={pageIndex + 1}
+          {pagingYn && (
+            <div className="pagination">
+              <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+                {"<<"}
+              </button>{" "}
+              <button
+                onClick={() => previousPage()}
+                disabled={!canPreviousPage}
+              >
+                {"<"}
+              </button>{" "}
+              <button onClick={() => nextPage()} disabled={!canNextPage}>
+                {">"}
+              </button>{" "}
+              <button
+                onClick={() => gotoPage(pageCount - 1)}
+                disabled={!canNextPage}
+              >
+                {">>"}
+              </button>{" "}
+              <span>
+                Page{" "}
+                <strong>
+                  {pageIndex + 1} of {pageOptions.length}
+                </strong>{" "}
+              </span>
+              <span>
+                | Go to page:{" "}
+                <input
+                  type="number"
+                  value={pageIndex + 1}
+                  onChange={(e) => {
+                    const page = e.target.value
+                      ? Number(e.target.value) - 1
+                      : 0;
+                    gotoPage(page);
+                  }}
+                  style={{ width: "100px" }}
+                />
+              </span>{" "}
+              <select
+                value={pageSize}
                 onChange={(e) => {
-                  const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                  gotoPage(page);
+                  setPageSize(Number(e.target.value));
                 }}
-                style={{ width: '100px' }}
-              />
-            </span>{' '}
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-              }}
-            >
-              {[10, 20, 30, 40, 50].map((pageSize) => (
-                <option key={pageSize} value={pageSize}>
-                  Show {pageSize}
-                </option>
-              ))}
-            </select>
-          </div>
+              >
+                {[10, 20, 30, 40, 50].map((pageSize) => (
+                  <option key={pageSize} value={pageSize}>
+                    Show {pageSize}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          <button onClick={() => showClickElement()}>showClickElement</button>
         </>
       ) : null}
     </TableContainer>
   );
-}
+};
 
 export default ServerSideTable;

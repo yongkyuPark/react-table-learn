@@ -7,7 +7,8 @@ import Inputbox from "./Inputbox"
 // accessor -> 데이터 객체랑 매핑 될 변수 명
 // Cell => 입력 안하면 디폴트 노출 입력하면 커스텀하여 노출
 // width -> 셀의 넓이 지정 
-
+// disableSortBy: true, // 정렬 비활성화
+// disableSortBy: false, // 정렬 활성화 (기본값)
 export const COLUMNS = [
     {
         Header : 'Id',
@@ -25,7 +26,8 @@ export const COLUMNS = [
         accessor : '',
         Cell: ({ row }: any) => (
             <div style={{ textAlign: "center" }}><Button value={row.original.id}/></div>
-        )
+        ),
+        disableSortBy: true,
     },
     {
         Header : '전시 순서',

@@ -1,4 +1,4 @@
-export const fetchPokemonData = async (page:number, pageSize:number, pageSortBy:any) => {
+export const getApiData = async (page:number, pageSize:number, pageSortBy:any) => {
     const offset = page * pageSize;
     let paramStr = ''
     if( pageSortBy.length > 0 ) {

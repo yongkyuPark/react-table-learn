@@ -2,7 +2,7 @@ import React, { InputHTMLAttributes, forwardRef, useEffect, useMemo, useRef, use
 import styled from "styled-components";
 import { CellProps, usePagination, useRowSelect, useSortBy, useTable } from "react-table";
 import { useQuery } from "react-query";
-import { fetchPokemonData } from "./fetchData";
+import { getApiData } from "./fetchData";
 import { Checkbox } from "./Checkbox";
 import Sorting from "./Sorting";
 
@@ -154,7 +154,7 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
 
   const { isLoading, error, data, isSuccess } = useQuery(
     ["mock_data", queryPageIndex, queryPageSize, queryPageSortBy],
-    () => fetchPokemonData(queryPageIndex, queryPageSize, queryPageSortBy),
+    () => getApiData(queryPageIndex, queryPageSize, queryPageSortBy),
     {
       keepPreviousData: true,
       staleTime: Infinity,

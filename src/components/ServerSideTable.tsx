@@ -6,6 +6,7 @@ import { getApiData } from "./fetchData";
 import { Checkbox } from "./Checkbox";
 import Sorting from "./Sorting";
 import { SortParams } from "./fetchData";
+import IndeterminateCheckbox from "./IndeterminateCheckbox";
 
 const TableContainer = styled.div`
   padding: 1rem;
@@ -40,35 +41,6 @@ const TableContainer = styled.div`
   }
 `;
 
-interface IndeterminateCheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
-    indeterminate?: boolean;
-}
-
-const IndeterminateCheckbox = forwardRef<HTMLInputElement, IndeterminateCheckboxProps>(
-    ({ indeterminate, ...rest }, ref:any) => {
-      const defaultRef = useRef<HTMLInputElement>(null);
-      const resolvedRef = ref || defaultRef;
-  
-      useEffect(() => {
-        if (resolvedRef.current) {
-          resolvedRef.current.indeterminate = indeterminate || false;
-        }
-      }, [resolvedRef, indeterminate]);
-  
-      return (
-        <>
-          <input type="checkbox" ref={resolvedRef} {...rest} />
-        </>
-      );
-    }
-);
-
-// 데이터 매핑 해주는 로직
-const trimData = (data = []) =>
-  data.map(({ name, url }) => ({
-    name,
-    url,
-  }));
 // 데이터 매핑 해주는 로직
 const mockTrimData = (data = []) =>
   data.map(

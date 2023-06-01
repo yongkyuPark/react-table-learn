@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-export const getApiData = async (page:number, pageSize:number, pageSortBy:any) => {
+export interface SortParams {
+  id: string;
+  desc: boolean;
+}
+
+export const getApiData = async (page:number, pageSize:number, pageSortBy: SortParams[]) => {
     const offset = page * pageSize;
     let sortCol = ''
     let sortKind = ''

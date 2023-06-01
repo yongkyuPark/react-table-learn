@@ -5,6 +5,7 @@ import { useQuery } from "react-query";
 import { getApiData } from "./fetchData";
 import { Checkbox } from "./Checkbox";
 import Sorting from "./Sorting";
+import { SortParams } from "./fetchData";
 
 const TableContainer = styled.div`
   padding: 1rem;
@@ -109,8 +110,20 @@ const PAGE_SIZE_CHANGED = "PAGE_SIZE_CHANGED";
 const TOTAL_COUNT_CHANGED = "TOTAL_COUNT_CHANGED";
 const PAGE_SORT_CHANGED = "PAGE_SORT_CHANGED";
 
+interface StateProps {
+  queryPageIndex: number;
+  queryPageSize: number;
+  totalCount: number;
+  queryPageSortBy: SortParams[];
+}
+
+interface ActionProps {
+  type: string;
+  payload: any;
+}
+
 // 상태 변할때 상태값 저장하는 로직
-const reducer = (state: any, { type, payload }: any) => {
+const reducer = (state: StateProps, { type, payload }: ActionProps) => {
   switch (type) {
     case PAGE_CHANGED:
       return {

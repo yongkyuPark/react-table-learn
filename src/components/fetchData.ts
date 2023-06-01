@@ -38,7 +38,7 @@ export const getApiData = async (page:number, pageSize:number, pageSortBy: SortP
       const data = response.data;
       
       // 목데이터 처리 위해서 임시로 customData 사용
-      const customData = data.slice((pageSize*page),(pageSize*(page+1)))
+      const customData = data.slice((pageSize*(page-1)),(pageSize*(page)))
   
       return customData;
     } catch (e) {

@@ -99,7 +99,7 @@ const mockTrimData = (data = []) =>
 
 // 초기값 설정
 const initialState = {
-  queryPageIndex: 0,
+  queryPageIndex: 1,
   queryPageSize: 10,
   totalCount: null,
   queryPageSortBy: [],
@@ -109,6 +109,7 @@ const PAGE_CHANGED = "PAGE_CHANGED";
 const PAGE_SIZE_CHANGED = "PAGE_SIZE_CHANGED";
 const TOTAL_COUNT_CHANGED = "TOTAL_COUNT_CHANGED";
 const PAGE_SORT_CHANGED = "PAGE_SORT_CHANGED";
+let isInitialRender = true
 
 interface StateProps {
   queryPageIndex: number;
@@ -128,7 +129,7 @@ const reducer = (state: StateProps, { type, payload }: ActionProps) => {
     case PAGE_CHANGED:
       return {
         ...state,
-        queryPageIndex: payload,
+        queryPageIndex: payload + 1,
       };
     case PAGE_SIZE_CHANGED:
       return {
@@ -237,9 +238,13 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
   const showClickElement = () => {
     console.log(selectedFlatRows.map((row) => row.original));
   };
-
+  
   React.useEffect(() => {
-    dispatch({ type: PAGE_CHANGED, payload: pageIndex });
+    if(!isInitialRender){
+      dispatch({ type: PAGE_CHANGED, payload: pageIndex });
+    }else{
+      isInitialRender = false
+    }
   }, [pageIndex]);
 
   React.useEffect(() => {

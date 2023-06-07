@@ -1,99 +1,20 @@
-import React, { InputHTMLAttributes, forwardRef, useEffect, useMemo, useRef, useState } from "react";
-import styled from "styled-components";
+import React, {useEffect} from "react";
 import { CellProps, usePagination, useRowSelect, useSortBy, useTable } from "react-table";
 import { useQuery } from "react-query";
 import { getApiData } from "./fetchData";
-import { Checkbox } from "./Checkbox";
-import Sorting from "./Sorting";
-import { SortParams } from "./fetchData";
 import IndeterminateCheckbox from "./IndeterminateCheckbox";
-
-const TableContainer = styled.div`
-  padding: 1rem;
-
-  table {
-    border-spacing: 0;
-    border: 1px solid black;
-
-    tr {
-      :last-child {
-        td {
-          border-bottom: 0;
-        }
-      }
-    }
-
-    th,
-    td {
-      margin: 0;
-      padding: 0.5rem;
-      border-bottom: 1px solid black;
-      border-right: 1px solid black;
-
-      :last-child {
-        border-right: 0;
-      }
-    }
-  }
-
-  .pagination {
-    padding: 0.5rem;
-  }
-`;
-
-// 데이터 매핑 해주는 로직
-const mockTrimData = (data = []) =>
-  data.map(
-    ({
-      id,
-      first_name,
-      displayNo,
-      last_name,
-      useYn,
-      date_of_birth,
-      country,
-      phone,
-      email,
-      age,
-    }) => ({
-      id,
-      first_name,
-      displayNo,
-      last_name,
-      useYn,
-      date_of_birth,
-      country,
-      phone,
-      email,
-      age,
-    })
-  );
-
-// 초기값 설정
-const initialState = {
-  queryPageIndex: 1,
-  queryPageSize: 10,
-  totalCount: null,
-  queryPageSortBy: [],
-};
+import TableContainer from "./TableContainer";
+import Table from "./Table";
+import Pagination from "./Pagination";
+import ServerSideTableProps from "../interface/ServerSideTableInterface";
+import StateProps from "../interface/TableStateInterface";
+import ActionProps from "../interface/TableActionInterface";
 
 const PAGE_CHANGED = "PAGE_CHANGED";
 const PAGE_SIZE_CHANGED = "PAGE_SIZE_CHANGED";
 const TOTAL_COUNT_CHANGED = "TOTAL_COUNT_CHANGED";
 const PAGE_SORT_CHANGED = "PAGE_SORT_CHANGED";
 let isInitialRender = true
-
-interface StateProps {
-  queryPageIndex: number;
-  queryPageSize: number;
-  totalCount: number;
-  queryPageSortBy: SortParams[];
-}
-
-interface ActionProps {
-  type: string;
-  payload: any;
-}
 
 // 상태 변할때 상태값 저장하는 로직
 const reducer = (state: StateProps, { type, payload }: ActionProps) => {
@@ -123,15 +44,21 @@ const reducer = (state: StateProps, { type, payload }: ActionProps) => {
   }
 };
 
-interface ServerSideTableProps {
-  columns: any[];
-  pagingYn: boolean;
-}
-
 const ServerSideTable: React.FC<ServerSideTableProps> = ({
   columns,
   pagingYn,
+  pageSizeParam,
+  urlParam
 }) => {
+
+  // 초기값 설정
+  const initialState = {
+    queryPageIndex: 1,
+    queryPageSize: pageSizeParam,
+    totalCount: null,
+    queryPageSortBy: [],
+  };
+
   // 초기값 reduce에 저장
   const [
     { queryPageIndex, queryPageSize, totalCount, queryPageSortBy },
@@ -140,13 +67,12 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
 
   const { isLoading, error, data, isSuccess } = useQuery(
     ["mock_data", queryPageIndex, queryPageSize, queryPageSortBy],
-    () => getApiData(queryPageIndex, queryPageSize, queryPageSortBy),
+    () => getApiData(queryPageIndex, queryPageSize, queryPageSortBy, urlParam),
     {
       keepPreviousData: true,
       staleTime: Infinity,
     }
   );
-
   // 테이블 설정
   const {
     getTableProps,
@@ -168,7 +94,7 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
   } = useTable(
     {
       columns,
-      data: isSuccess ? mockTrimData(data) : [],
+      data: isSuccess ? data : [],
       initialState: {
         pageIndex: queryPageIndex,
         pageSize: queryPageSize,
@@ -249,95 +175,33 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
 
   return (
     <TableContainer>
-      {isSuccess ? (
-        <>
-          <table {...getTableProps()}>
-            <thead>
-              {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => (
-                    <th
-                      {...column.getHeaderProps(column.getSortByToggleProps())}
-                    >
-                      {column.render("Header")}
-                      {column.isSorted ? <Sorting column={column} /> : ""}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-              {page.map((row) => {
-                prepareRow(row);
-                return (
-                  <tr {...row.getRowProps()}>
-                    {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                    ))}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          {pagingYn && (
-            <div className="pagination">
-              <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-                {"<<"}
-              </button>{" "}
-              <button
-                onClick={() => previousPage()}
-                disabled={!canPreviousPage}
-              >
-                {"<"}
-              </button>{" "}
-              <button onClick={() => nextPage()} disabled={!canNextPage}>
-                {">"}
-              </button>{" "}
-              <button
-                onClick={() => gotoPage(pageCount - 1)}
-                disabled={!canNextPage}
-              >
-                {">>"}
-              </button>{" "}
-              <span>
-                Page{" "}
-                <strong>
-                  {pageIndex + 1} of {pageOptions.length}
-                </strong>{" "}
-              </span>
-              <span>
-                | Go to page:{" "}
-                <input
-                  type="number"
-                  value={pageIndex + 1}
-                  onChange={(e) => {
-                    const page = e.target.value
-                      ? Number(e.target.value) - 1
-                      : 0;
-                    gotoPage(page);
-                  }}
-                  style={{ width: "100px" }}
-                />
-              </span>{" "}
-              <select
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
-                }}
-              >
-                {[10, 20, 30, 40, 50].map((pageSize) => (
-                  <option key={pageSize} value={pageSize}>
-                    Show {pageSize}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-          <button onClick={() => showClickElement()}>showClickElement</button>
-        </>
-      ) : null}
+      <Table
+        isSuccess={isSuccess}
+        getTableProps={getTableProps}
+        getTableBodyProps={getTableBodyProps}
+        headerGroups={headerGroups}
+        page={page}
+        prepareRow={prepareRow}
+      />
+      <Pagination
+        isSuccess={isSuccess}
+        gotoPage={gotoPage}
+        canPreviousPage={canPreviousPage}
+        previousPage={previousPage}
+        nextPage={nextPage}
+        canNextPage={canNextPage}
+        pageCount={pageCount}
+        pageIndex={pageIndex}
+        pageOptions={pageOptions}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        pagingYn={pagingYn}
+        showClickElement={showClickElement}
+      />
     </TableContainer>
   );
 };
 
 export default ServerSideTable;
+
+

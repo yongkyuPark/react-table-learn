@@ -5,7 +5,7 @@ export interface SortParams {
   desc: boolean;
 }
 
-export const getApiData = async (page:number, pageSize:number, pageSortBy: SortParams[]) => {
+export const getApiData = async (page:number, pageSize:number, pageSortBy: SortParams[], url:string) => {
     const offset = page * pageSize;
     let sortCol = ''
     let sortKind = ''
@@ -27,7 +27,7 @@ export const getApiData = async (page:number, pageSize:number, pageSortBy: SortP
       // const data = await response.json() 
 
       // AXIOS 사용
-      const response = await axios.get(`http://localhost:3000/data/MOCK_DATA.json`, {
+      const response = await axios.get(url, {
         params: {
           pageNo: page,
           pageSize: pageSize,

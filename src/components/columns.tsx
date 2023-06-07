@@ -1,7 +1,4 @@
-import { ChangeEvent } from "react"
-import Selectbox from "./Selectbox"
-import Button from "./Button"
-import Inputbox from "./Inputbox"
+import CustomCell from "./CustomCell"
 
 // Header -> 헤더에 나타날 명칭
 // accessor -> 데이터 객체랑 매핑 될 변수 명
@@ -13,9 +10,7 @@ export const COLUMNS = [
     {
         Header : 'Id',
         accessor : 'id',
-        Cell: ({ row }: any) => (
-          <div><a href={row.original.id} target="_blank" rel="noopener noreferrer">{row.original.id}</a></div>
-        ),
+        Cell: ({ row }: any) => <CustomCell row={row} value={row.original.id} type="link" />,
     },
     {
         Header : 'First Name',
@@ -24,17 +19,13 @@ export const COLUMNS = [
     {
         Header : '링크 복사',
         accessor : '',
-        Cell: ({ row }: any) => (
-            <div style={{ textAlign: "center" }}><Button value={row.original.id}/></div>
-        ),
+        Cell: ({ row }: any) => <CustomCell row={row} value={row.original.id} type="button" />,
         disableSortBy: true,
     },
     {
         Header : '전시 순서',
         accessor : 'displayNo',
-        Cell: ({row}: any) => (
-            <Inputbox value={row.original.displayNo || 0} row={row} />
-        )
+        Cell: ({row}: any) => <CustomCell row={row} value={row.original.displayNo || 0} type="input" />
     },
     {
         Header : 'Last Name',
@@ -43,11 +34,7 @@ export const COLUMNS = [
     {
         Header : '사용여부',
         accessor : 'useYn',
-        Cell: ({ row }: any) => (
-            <div style={{ textAlign: "center" }}>
-                <Selectbox value={row.original.useYn || 'N'} row={row} />
-            </div>
-          ),
+        Cell: ({ row }: any) => <CustomCell row={row} value={row.original.useYn || 'N'} type="select" />
       
     },
     {

@@ -10,7 +10,7 @@ import IndeterminateCheckbox from "./IndeterminateCheckbox";
 import TableContainer from "./TableContainer";
 import Table from "./Table";
 import Pagination from "./Pagination";
-import ServerSideTableProps from "../interface/ServerSideTableInterface";
+import { ServerSideTableProps } from "../interface/GridInterface";
 import gridReducer from "./GridReducer";
 import {
   usePageIndexEffect,

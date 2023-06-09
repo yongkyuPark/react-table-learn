@@ -2,9 +2,9 @@ import React from "react";
 import Button from "./Button";
 import Inputbox from "./Inputbox";
 import Selectbox from "./Selectbox";
-import CustomCellProps from "../interface/CustomCellInterface";
+import { CustomCellProps } from "../interface/GridInterface";
 
-const CustomCell = ({ row, value, type } : CustomCellProps) => {
+const CustomCell = ({ row, value, type }: CustomCellProps) => {
   switch (type) {
     case "link":
       return (

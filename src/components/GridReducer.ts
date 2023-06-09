@@ -1,5 +1,5 @@
-import StateProps from "../interface/TableStateInterface";
-import ActionProps from "../interface/TableActionInterface";
+import { StateProps } from "../interface/GridInterface";
+import { ActionProps } from "../interface/GridInterface";
 
 const PAGE_CHANGED = "PAGE_CHANGED";
 const PAGE_SIZE_CHANGED = "PAGE_SIZE_CHANGED";

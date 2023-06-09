@@ -34,3 +34,7 @@ export interface SortParams {
   id: string;
   desc: boolean;
 }
+
+export interface SortingProps {
+  column: any;
+}

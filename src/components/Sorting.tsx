@@ -1,9 +1,6 @@
 import { ArrowUpOutlined } from "@ant-design/icons";
 import { ArrowDownOutlined } from "@ant-design/icons";
-
-interface SortingProps {
-  column: any;
-}
+import { SortingProps } from "../interface/GridInterface";
 
 const Sorting: React.FC<SortingProps> = ({ column }) => (
   <span className="react-table__column-header sortable">

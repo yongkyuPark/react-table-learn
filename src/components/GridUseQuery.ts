@@ -1,12 +1,6 @@
 import { useQuery } from "react-query";
-import { SortParams, getApiData } from "./fetchData";
-
-interface useQueryDataProps {
-  queryPageIndex: number;
-  queryPageSize: number;
-  queryPageSortBy: SortParams[];
-  urlParam: string;
-}
+import { getApiData } from "./fetchData";
+import { useQueryDataProps } from "../interface/GridInterface";
 
 const useQueryData = ({
   queryPageIndex,

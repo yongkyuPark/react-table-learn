@@ -24,3 +24,10 @@ export interface StateProps {
   totalCount: number;
   queryPageSortBy: SortParams[];
 }
+
+export interface useQueryDataProps {
+  queryPageIndex: number;
+  queryPageSize: number;
+  queryPageSortBy: SortParams[];
+  urlParam: string;
+}

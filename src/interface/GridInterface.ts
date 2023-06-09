@@ -1,5 +1,3 @@
-import { SortParams } from "../components/fetchData";
-
 export interface CustomCellProps {
   type: string;
   value: any;
@@ -30,4 +28,9 @@ export interface useQueryDataProps {
   queryPageSize: number;
   queryPageSortBy: SortParams[];
   urlParam: string;
+}
+
+export interface SortParams {
+  id: string;
+  desc: boolean;
 }

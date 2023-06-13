@@ -1,36 +1,23 @@
 import styled from "styled-components";
 
 const TableContainer = styled.div`
-  padding: 1rem;
+  .resizer {
+    display: inline-block;
+    background: white;
+    width: 3px;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translateX(50%);
+    z-index: 1;
+    ${"" /* prevents from scrolling while dragging on touch devices */}
+    touch-action:none;
 
-  table {
-    border-spacing: 0;
-    border: 1px solid black;
-
-    tr {
-      :last-child {
-        td {
-          border-bottom: 0;
-        }
-      }
+    &.isResizing {
+      background: red;
     }
-
-    th,
-    td {
-      margin: 0;
-      padding: 0.5rem;
-      border-bottom: 1px solid black;
-      border-right: 1px solid black;
-
-      :last-child {
-        border-right: 0;
-      }
-    }
-  }
-
-  .pagination {
-    padding: 0.5rem;
   }
 `;
 
-export default TableContainer
+export default TableContainer;

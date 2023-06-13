@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "./Button";
+import GridButton from "./Button";
 import Inputbox from "./Inputbox";
 import Selectbox from "./Selectbox";
 import { CustomCellProps } from "../interface/GridInterface";
@@ -17,7 +17,7 @@ const CustomCell = ({ row, value, type }: CustomCellProps) => {
     case "button":
       return (
         <div style={{ textAlign: "center" }}>
-          <Button value={value} />
+          <GridButton value={value} />
         </div>
       );
     case "input":

@@ -1,18 +1,26 @@
+import { Button } from "antd";
+
 interface ButtonProps {
-    value : string
+  value: string;
 }
 
-const Button: React.FC<ButtonProps> = (props) => {
+const GridButton: React.FC<ButtonProps> = (props) => {
+  const handelOnClick = (e: React.MouseEvent, value: string) => {
+    console.log(value);
+  };
 
-    const handelOnClick = (e :  React.MouseEvent, value:string) => {
-        console.log(value)
-    }
-
-    return (
-        <div><button onClick={(e) => {handelOnClick(e,props.value)}} value={props.value}>복사</button></div>
-    );
+  return (
+    <div>
+      <Button
+        onClick={(e) => {
+          handelOnClick(e, props.value);
+        }}
+        value={props.value}
+      >
+        복사
+      </Button>
+    </div>
+  );
 };
 
-
-
-export default Button
+export default GridButton;

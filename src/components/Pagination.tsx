@@ -1,6 +1,10 @@
 import { showClickElement } from "./GridEvent";
+import Pagination from "react-bootstrap/Pagination";
+import { Select, Space } from "antd";
 
-const Pagination = ({
+const { Option } = Select;
+
+const GridPagination = ({
   isSuccess,
   gotoPage,
   canPreviousPage,
@@ -35,24 +39,30 @@ const Pagination = ({
         <>
           {pagingYn && (
             <div className="pagination">
-              <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-                {"<<"}
-              </button>{" "}
-              <button
+              <Pagination.First
+                onClick={() => gotoPage(0)}
+                disabled={!canPreviousPage}
+              >
+                {/* {"<<"} */}
+              </Pagination.First>{" "}
+              <Pagination.Prev
                 onClick={() => previousPage()}
                 disabled={!canPreviousPage}
               >
-                {"<"}
-              </button>{" "}
-              <button onClick={() => nextPage()} disabled={!canNextPage}>
-                {">"}
-              </button>{" "}
-              <button
+                {/* {"<"} */}
+              </Pagination.Prev>{" "}
+              <Pagination.Next
+                onClick={() => nextPage()}
+                disabled={!canNextPage}
+              >
+                {/* {">"} */}
+              </Pagination.Next>{" "}
+              <Pagination.Last
                 onClick={() => gotoPage(pageCount - 1)}
                 disabled={!canNextPage}
               >
-                {">>"}
-              </button>{" "}
+                {/* {">>"} */}
+              </Pagination.Last>{" "}
               <span>
                 Page{" "}
                 <strong>
@@ -73,18 +83,18 @@ const Pagination = ({
                   style={{ width: "100px" }}
                 />
               </span>{" "}
-              <select
+              <Select
                 value={pageSize}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
+                onChange={(value) => {
+                  setPageSize(Number(value));
                 }}
               >
                 {[10, 20, 30, 40, 50].map((pageSize) => (
-                  <option key={pageSize} value={pageSize}>
+                  <Option key={pageSize} value={pageSize}>
                     Show {pageSize}
-                  </option>
+                  </Option>
                 ))}
-              </select>
+              </Select>
             </div>
           )}
           <button onClick={() => showClickElement(selectedFlatRows)}>
@@ -96,4 +106,4 @@ const Pagination = ({
   );
 };
 
-export default Pagination;
+export default GridPagination;

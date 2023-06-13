@@ -1,7 +1,9 @@
-import { Cell, ColumnInstance } from "react-table";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Cell, ColumnInstance, useResizeColumns } from "react-table";
 import Sorting from "./Sorting";
+import Table from "react-bootstrap/Table";
 
-const Table = ({
+const GridTable = ({
   isSuccess,
   getTableProps,
   getTableBodyProps,
@@ -20,7 +22,7 @@ const Table = ({
     <>
       {isSuccess ? (
         <>
-          <table {...getTableProps()}>
+          <Table striped bordered hover {...getTableProps()}>
             <thead>
               {headerGroups.map((headerGroup) => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
@@ -29,6 +31,12 @@ const Table = ({
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                     >
                       {column.render("Header")}
+                      <div
+                        {...column.getResizerProps()}
+                        className={`resizer ${
+                          column.isResizing ? "isResizing" : ""
+                        }`}
+                      />
                       {column.isSorted ? <Sorting column={column} /> : ""}
                     </th>
                   ))}
@@ -47,11 +55,11 @@ const Table = ({
                 );
               })}
             </tbody>
-          </table>
+          </Table>
         </>
       ) : null}
     </>
   );
 };
 
-export default Table;
+export default GridTable;

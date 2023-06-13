@@ -1,15 +1,17 @@
 import React from "react";
 import {
   CellProps,
+  useBlockLayout,
   usePagination,
+  useResizeColumns,
   useRowSelect,
   useSortBy,
   useTable,
 } from "react-table";
 import IndeterminateCheckbox from "./IndeterminateCheckbox";
 import TableContainer from "./TableContainer";
-import Table from "./Table";
-import Pagination from "./Pagination";
+import GridTable from "./Table";
+import GridPagination from "./Pagination";
 import { ServerSideTableProps } from "../interface/GridInterface";
 import gridReducer from "./GridReducer";
 import {
@@ -88,6 +90,8 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
     useSortBy,
     usePagination,
     useRowSelect,
+    useBlockLayout,
+    useResizeColumns,
     (hooks) => {
       hooks.visibleColumns.push((columns) => [
         {
@@ -102,6 +106,7 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
               <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
             </div>
           ),
+          width: 30,
         },
         ...columns,
       ]);
@@ -123,7 +128,7 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
 
   return (
     <TableContainer>
-      <Table
+      <GridTable
         isSuccess={isSuccess}
         getTableProps={getTableProps}
         getTableBodyProps={getTableBodyProps}
@@ -131,7 +136,7 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
         page={page}
         prepareRow={prepareRow}
       />
-      <Pagination
+      <GridPagination
         isSuccess={isSuccess}
         gotoPage={gotoPage}
         canPreviousPage={canPreviousPage}

@@ -11,13 +11,23 @@ export const getApiData = async (
   let sortCol = "";
   let sortKind = "";
   let paramStr = "";
-  if (pageSortBy.length > 0) {
-    const sortParams = pageSortBy[0];
+  pageSortBy.forEach((sortParams) => {
+    console.log(sortParams);
     const sortyByDir = sortParams.desc ? "desc" : "asc";
-    sortCol = sortParams.id;
-    sortKind = sortyByDir;
-    paramStr = `&sortCol=${sortParams.id}&sortKind=${sortyByDir}`;
-  }
+    if (sortCol !== "") {
+      sortCol += ",";
+      sortKind += ",";
+    }
+    sortCol += sortParams.id;
+    sortKind += sortyByDir;
+  });
+  // if (pageSortBy.length > 0) {
+  //   const sortParams = pageSortBy[0];
+  //   const sortyByDir = sortParams.desc ? "desc" : "asc";
+  //   sortCol = sortParams.id;
+  //   sortKind = sortyByDir;
+  //   paramStr = `&sortCol=${sortParams.id}&sortKind=${sortyByDir}`;
+  // }
 
   try {
     console.log("go api request");
